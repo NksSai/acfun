@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string></string>
+	<key>connections</key>
+	<dict>
+		<key>DC920740-FA22-425C-A519-94090D065611</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>11D5721D-E45C-4D45-82C8-2CC370002271</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Nks.Sai</string>
+	<key>description</key>
+	<string>Search videos in bilibili.tv</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>Acfun</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>escaping</key>
+				<integer>36</integer>
+				<key>keyword</key>
+				<string>acfun</string>
+				<key>runningsubtext</key>
+				<string>Please Wait...</string>
+				<key>script</key>
+				<string>#!/usr/bin/python
+# coding=utf-8
+#FILENAME : __main.py__ 
+#DESCRIBE:
+
+import alfred,urllib,urllib2,json,time
+
+query = u'{query}'
+url = 'http://api.acfun.tv/search?exact=1&amp;channelIds=0&amp;orderId=0&amp;orderBy=1&amp;pageNo=1&amp;pageSize=10&amp;'
+
+query.strip(' ')
+
+if u' ' in query:
+    list = query.split(u' ')
+    query = list[1]
+    arg = list[0]
+    if arg == 'new':
+        url = 'http://api.acfun.tv/search?exact=1&amp;channelIds=0&amp;orderId=2&amp;orderBy=1&amp;pageNo=1&amp;pageSize=10&amp;'
+
+get_url = url + urllib.urlencode({'query':query.encode('utf-8')})
+
+json_str = urllib2.urlopen(get_url).read()
+json_obj = json.loads(json_str[10:-1])
+
+results = []
+index = 1
+format_str = '%Y-%m-%d %H:%M:%S'
+
+for i in json_obj['contents']:
+    link = 'http://www.acfun.tv/v/ac' + str(i['aid'])
+    title = i['title']
+    tim = time.localtime(int(str(i['releaseDate'])[:10]))
+    dt = time.strftime(format_str, tim)
+    subtitle = u'UP主:' + i['username'] + u' 时间' + dt
+    subtitle = subtitle + u' 播放:' + str(i['views']) + u' 简介' + i['description']
+    item = alfred.Item({'uid':index ,'arg': link},title,subtitle,('acfun.jpg',{'type': 'jpg'}))
+    results.append(item)
+    index += 1
+
+alfred.write(alfred.xml(results))
+</string>
+				<key>subtext</key>
+				<string>new: 按时间排序，否则为默认</string>
+				<key>title</key>
+				<string>Search videos in Acfun</string>
+				<key>type</key>
+				<integer>3</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>DC920740-FA22-425C-A519-94090D065611</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>plusspaces</key>
+				<false/>
+				<key>url</key>
+				<string>{query}</string>
+				<key>utf8</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.openurl</string>
+			<key>uid</key>
+			<string>11D5721D-E45C-4D45-82C8-2CC370002271</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string></string>
+	<key>uidata</key>
+	<dict>
+		<key>11D5721D-E45C-4D45-82C8-2CC370002271</key>
+		<dict>
+			<key>ypos</key>
+			<real>60</real>
+		</dict>
+		<key>DC920740-FA22-425C-A519-94090D065611</key>
+		<dict>
+			<key>ypos</key>
+			<real>60</real>
+		</dict>
+	</dict>
+	<key>webaddress</key>
+	<string></string>
+</dict>
+</plist>
